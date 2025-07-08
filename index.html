@@ -58,6 +58,9 @@
       font-size: 1em;
       box-sizing: border-box;
     }
+    input::placeholder {
+      color: #999;
+    }
     button {
       padding: 10px 20px;
       border-radius: 5px;
@@ -108,6 +111,9 @@
     .timer button.clear {
       background-color: #e74c3c;
     }
+    .timer button.dismiss {
+      background-color: #e67e22;
+    }
   </style>
 </head>
 <body>
@@ -117,15 +123,15 @@
     <div class="time-inputs">
       <div class="input-group">
         <label for="hours">Hours</label>
-        <input type="number" id="hours" min="0" value="0">
+        <input type="number" id="hours" placeholder="0" min="0">
       </div>
       <div class="input-group">
         <label for="minutes">Minutes</label>
-        <input type="number" id="minutes" min="0" value="0">
+        <input type="number" id="minutes" placeholder="0" min="0">
       </div>
       <div class="input-group">
         <label for="seconds">Seconds</label>
-        <input type="number" id="seconds" min="0" value="0">
+        <input type="number" id="seconds" placeholder="0" min="0">
       </div>
     </div>
     <button type="submit">Add Timer</button>
@@ -172,6 +178,7 @@
         <button class="add">Add a Minute</button>
         <button class="pause">Pause</button>
         <button class="clear">Clear</button>
+        <button class="dismiss" style="display:none;">Dismiss</button>
       `;
 
       const timeValue = timer.element.querySelector('.time .value');
@@ -179,6 +186,7 @@
       const addBtn = timer.element.querySelector('.add');
       const pauseBtn = timer.element.querySelector('.pause');
       const clearBtn = timer.element.querySelector('.clear');
+      const dismissBtn = timer.element.querySelector('.dismiss');
 
       addBtn.addEventListener('click', () => {
         timer.baseAlarm += 60 * 1000;
@@ -191,9 +199,6 @@
         if (timer.paused) {
           timer.elapsedWhenPaused = Date.now() - timer.startTime;
           pauseBtn.textContent = 'Resume';
-          alarmSound.play();
-          timer.element.classList.add('flashing');
-          setTimeout(() => timer.element.classList.remove('flashing'), 1500);
         } else {
           timer.startTime = Date.now() - timer.elapsedWhenPaused;
           pauseBtn.textContent = 'Pause';
@@ -204,6 +209,11 @@
         timer.element.remove();
         const index = timers.indexOf(timer);
         if (index > -1) timers.splice(index, 1);
+      });
+
+      dismissBtn.addEventListener('click', () => {
+        timer.element.classList.remove('flashing');
+        dismissBtn.style.display = 'none';
       });
 
       document.getElementById('timers').appendChild(timer.element);
@@ -225,7 +235,7 @@
             timer.lastAlarmTime = alarmTime;
             alarmSound.play();
             timer.element.classList.add('flashing');
-            setTimeout(() => timer.element.classList.remove('flashing'), 2000);
+            timer.element.querySelector('.dismiss').style.display = 'inline-block';
           }
         });
       });
