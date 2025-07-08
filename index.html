@@ -4,7 +4,117 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Macter Kitchen Timer</title>
-  <style>/* (same styles as before) */</style>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 10px;
+      background: #000000;
+      color: #ffffff;
+      margin: 0;
+    }
+    h1 {
+      color: #ffffff;
+      text-align: center;
+      font-size: 1.8em;
+      margin-bottom: 15px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .time-inputs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: nowrap;
+      justify-content: center;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 70px;
+    }
+    .input-group label {
+      font-size: 0.8em;
+      color: #ffffff;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+    input[type="text"] {
+      width: 250px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    input::placeholder {
+      color: #999;
+    }
+    button {
+      padding: 10px 20px;
+      border-radius: 5px;
+      border: none;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .timer {
+      background: #1c1c1c;
+      border: 2px solid #3498db;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .flashing {
+      background-color: #ff0000 !important;
+      border-color: #ffffff !important;
+    }
+    .label {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .time, .alarm {
+      margin: 5px 0;
+      text-align: center;
+    }
+    .time .value, .alarm .value {
+      font-size: 2.2em;
+      font-weight: bold;
+    }
+    .timer button {
+      margin: 5px 5px 0 0;
+      background-color: #2ecc71;
+    }
+    .timer button.pause {
+      background-color: #f39c12;
+    }
+    .timer button.clear {
+      background-color: #e74c3c;
+    }
+    .timer button.dismiss {
+      background-color: #e67e22;
+    }
+  </style>
 </head>
 <body>
   <h1>Macter Kitchen Timer</h1>
