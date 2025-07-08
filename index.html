@@ -79,6 +79,11 @@
       margin-bottom: 15px;
       border-radius: 10px;
       box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .flashing {
+      background-color: #ff0000 !important;
+      border-color: #ffffff !important;
     }
     .label {
       font-size: 1.2em;
@@ -86,9 +91,12 @@
       color: #ffffff;
     }
     .time, .alarm {
-      margin: 10px 0;
-      font-size: 3em;
+      margin: 5px 0;
       text-align: center;
+    }
+    .time .value, .alarm .value {
+      font-size: 2.2em;
+      font-weight: bold;
     }
     .timer button {
       margin: 5px 5px 0 0;
@@ -159,15 +167,15 @@
       timer.element.classList.add('timer');
       timer.element.innerHTML = `
         <div class="label">${label}</div>
-        <div class="time">Elapsed: 0:00</div>
-        <div class="alarm">Alarm at: ${formatTime(totalMs)}</div>
+        <div class="time">Elapsed: <span class="value">0:00</span></div>
+        <div class="alarm">Alarm at: <span class="value">${formatTime(totalMs)}</span></div>
         <button class="add">Add a Minute</button>
         <button class="pause">Pause</button>
         <button class="clear">Clear</button>
       `;
 
-      const timeDiv = timer.element.querySelector('.time');
-      const alarmDiv = timer.element.querySelector('.alarm');
+      const timeValue = timer.element.querySelector('.time .value');
+      const alarmValue = timer.element.querySelector('.alarm .value');
       const addBtn = timer.element.querySelector('.add');
       const pauseBtn = timer.element.querySelector('.pause');
       const clearBtn = timer.element.querySelector('.clear');
@@ -175,7 +183,7 @@
       addBtn.addEventListener('click', () => {
         timer.baseAlarm += 60 * 1000;
         timer.alarms.push(timer.baseAlarm);
-        alarmDiv.textContent = `Alarm at: ${formatTime(timer.baseAlarm)}`;
+        alarmValue.textContent = formatTime(timer.baseAlarm);
       });
 
       pauseBtn.addEventListener('click', () => {
@@ -183,7 +191,9 @@
         if (timer.paused) {
           timer.elapsedWhenPaused = Date.now() - timer.startTime;
           pauseBtn.textContent = 'Resume';
-          alarmSound.play(); // Play alarm when paused
+          alarmSound.play();
+          timer.element.classList.add('flashing');
+          setTimeout(() => timer.element.classList.remove('flashing'), 1500);
         } else {
           timer.startTime = Date.now() - timer.elapsedWhenPaused;
           pauseBtn.textContent = 'Pause';
@@ -208,12 +218,14 @@
         const elapsed = now - timer.startTime;
         const mins = Math.floor(elapsed / 60000);
         const secs = Math.floor((elapsed % 60000) / 1000);
-        timer.element.querySelector('.time').textContent = `Elapsed: ${mins}:${secs.toString().padStart(2, '0')}`;
+        timer.element.querySelector('.time .value').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
 
         timer.alarms.forEach(alarmTime => {
           if (elapsed >= alarmTime && alarmTime > timer.lastAlarmTime) {
             timer.lastAlarmTime = alarmTime;
             alarmSound.play();
+            timer.element.classList.add('flashing');
+            setTimeout(() => timer.element.classList.remove('flashing'), 2000);
           }
         });
       });
@@ -222,13 +234,10 @@
     document.getElementById('addTimerForm').addEventListener('submit', e => {
       e.preventDefault();
 
-      // Unlock audio for iOS Safari
       alarmSound.play().then(() => {
         alarmSound.pause();
         alarmSound.currentTime = 0;
-      }).catch(() => {
-        // ignore play errors on first interaction
-      });
+      }).catch(() => {});
 
       const label = document.getElementById('label').value;
       const hours = parseInt(document.getElementById('hours').value) || 0;
