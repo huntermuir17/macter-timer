@@ -25,31 +25,49 @@
       align-items: center;
       margin-bottom: 20px;
     }
+    .time-inputs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: nowrap;
+      justify-content: center;
+    }
     .input-group {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 100%;
-      max-width: 300px;
+      width: 70px;
     }
     .input-group label {
       font-size: 0.8em;
       color: #ffffff;
       margin-bottom: 5px;
+      text-align: center;
     }
-    input, button {
+    input[type="text"] {
+      width: 250px;
       padding: 10px;
       border-radius: 5px;
       border: 1px solid #ccc;
       font-size: 1em;
+    }
+    input[type="number"] {
       width: 100%;
-      max-width: 300px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 10px 20px;
+      border-radius: 5px;
+      border: none;
+      font-size: 1em;
+      cursor: pointer;
     }
     button {
       background-color: #3498db;
       color: white;
-      border: none;
-      cursor: pointer;
     }
     button:hover {
       background-color: #2980b9;
@@ -87,18 +105,20 @@
 <body>
   <h1>Macter Kitchen Timer</h1>
   <form id="addTimerForm">
-    <input type="text" id="label" placeholder="Label (e.g., Pasta)" required>
-    <div class="input-group">
-      <label for="hours">Hours</label>
-      <input type="number" id="hours" min="0" value="0">
-    </div>
-    <div class="input-group">
-      <label for="minutes">Minutes</label>
-      <input type="number" id="minutes" min="0" value="0">
-    </div>
-    <div class="input-group">
-      <label for="seconds">Seconds</label>
-      <input type="number" id="seconds" min="0" value="0">
+    <input type="text" id="label" placeholder="Label (optional)">
+    <div class="time-inputs">
+      <div class="input-group">
+        <label for="hours">Hours</label>
+        <input type="number" id="hours" min="0" value="0">
+      </div>
+      <div class="input-group">
+        <label for="minutes">Minutes</label>
+        <input type="number" id="minutes" min="0" value="0">
+      </div>
+      <div class="input-group">
+        <label for="seconds">Seconds</label>
+        <input type="number" id="seconds" min="0" value="0">
+      </div>
     </div>
     <button type="submit">Add Timer</button>
   </form>
@@ -122,6 +142,7 @@
     }
 
     function createTimer(label, hours, minutes, seconds) {
+      if (!label) label = "Timer";
       const totalMs = (hours * 3600 + minutes * 60 + seconds) * 1000;
       const startTime = Date.now();
       const timer = {
@@ -162,6 +183,7 @@
         if (timer.paused) {
           timer.elapsedWhenPaused = Date.now() - timer.startTime;
           pauseBtn.textContent = 'Resume';
+          alarmSound.play(); // Play alarm when paused
         } else {
           timer.startTime = Date.now() - timer.elapsedWhenPaused;
           pauseBtn.textContent = 'Pause';
@@ -199,12 +221,21 @@
 
     document.getElementById('addTimerForm').addEventListener('submit', e => {
       e.preventDefault();
+
+      // Unlock audio for iOS Safari
+      alarmSound.play().then(() => {
+        alarmSound.pause();
+        alarmSound.currentTime = 0;
+      }).catch(() => {
+        // ignore play errors on first interaction
+      });
+
       const label = document.getElementById('label').value;
       const hours = parseInt(document.getElementById('hours').value) || 0;
       const minutes = parseInt(document.getElementById('minutes').value) || 0;
       const seconds = parseInt(document.getElementById('seconds').value) || 0;
 
-      if (label && (hours || minutes || seconds)) {
+      if (hours || minutes || seconds) {
         createTimer(label, hours, minutes, seconds);
         document.getElementById('addTimerForm').reset();
       }
